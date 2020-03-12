@@ -1,0 +1,11 @@
+spring:
+
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: com.example.schedulingtasks.config.NamingStrategy
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?schema=getAllByFilter
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
