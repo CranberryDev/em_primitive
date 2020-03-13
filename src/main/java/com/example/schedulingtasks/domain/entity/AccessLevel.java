@@ -2,22 +2,20 @@ package com.example.schedulingtasks.domain.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "note", schema = "test")
+@Table(name = "access_level", schema = "test")
 @Getter
 @Setter
-public class Note {
+@Immutable
+public class AccessLevel {
 
     @Id
-    @GeneratedValue
-    private Long id;
-
-    private String text;
+    private String value;
 
 }

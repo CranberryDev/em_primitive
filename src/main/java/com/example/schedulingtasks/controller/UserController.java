@@ -9,6 +9,7 @@ import com.example.schedulingtasks.util.RqUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,5 +39,10 @@ public class UserController {
     public void delete(@PathVariable(name = "id") Long id) {
         userService.delete(id);
     }
+
+//    @GetMapping(path = "{userId}")
+//    public List<Object> allAccessibleNotes(@PathVariable(name = "userId") String userId) {
+//        return new ArrayList<>();
+//    }
 
 }

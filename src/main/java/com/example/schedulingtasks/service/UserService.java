@@ -21,8 +21,9 @@ public class UserService {
 
     /**
      * @param filter
+     * @param page
      */
-    public List<User> getAllByFilter(User filter, PageRq page) {
+    public List<User> getAllByFilter(final User filter, final PageRq page) {
         final EntityManager em = emf.createEntityManager();
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -72,8 +73,8 @@ public class UserService {
         return result;
     }
 
-    public User save(User user) {
-        EntityManager entityManager = emf.createEntityManager();
+    public User save(final User user) {
+        final EntityManager entityManager = emf.createEntityManager();
         entityManager.getTransaction().begin();
         entityManager.persist(user);
         entityManager.flush();
@@ -82,8 +83,8 @@ public class UserService {
         return user;
     }
 
-    public void delete(Long id) {
-        EntityManager entityManager = emf.createEntityManager();
+    public void delete(final Long id) {
+        final EntityManager entityManager = emf.createEntityManager();
         entityManager.getTransaction().begin();
         entityManager
                 .createQuery("delete from User u where u.id = :id")
@@ -94,8 +95,8 @@ public class UserService {
         entityManager.close();
     }
 
-    public User getById(Long id) {
-        EntityManager entityManager = emf.createEntityManager();
+    public User getById(final Long id) {
+        final EntityManager entityManager = emf.createEntityManager();
         User user = entityManager.find(User.class, id);
         entityManager.close();
         return user;
