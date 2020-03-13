@@ -56,6 +56,12 @@ public class RqUtil {
         }
     }
 
+    public static void checkOnRemoveAuthority(final List<UserNoteRq> userNotes) {
+        if(userNotes.stream().anyMatch(RqUtil::isBadParamForRemoveAuthority)) {
+            throw new RuntimeException();
+        }
+    }
+
     private static boolean isBadParamForGrantAuthority(final UserNoteRq userNote) {
         if(Objects.isNull(userNote)) {
             return true;
@@ -65,5 +71,11 @@ public class RqUtil {
         }
         return Objects.isNull(userNote.getAccessLevel()) || Objects.isNull(userNote.getAccessLevel().getValue());
     }
+
+    private static boolean isBadParamForRemoveAuthority(final UserNoteRq userNote) {
+        return Objects.isNull(userNote.getUser()) || Objects.isNull(userNote.getNote());
+    }
+
+
 
 }

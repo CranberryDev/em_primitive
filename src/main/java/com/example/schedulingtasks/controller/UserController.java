@@ -75,9 +75,10 @@ public class UserController {
         userService.grantAuthority(UserNoteConverter.toEntityList(notes));
     }
 
-//    @DeleteMapping(path = "notes")
-//    public void deleteNotes() {
-//
-//    }
+    @DeleteMapping(path = "notes/authority")
+    public void removeAuthority(@RequestBody final List<UserNoteRq> notes) {
+        RqUtil.checkOnRemoveAuthority(notes);
+        userService.removeAuthority(UserNoteConverter.toEntityList(notes));
+    }
 
 }

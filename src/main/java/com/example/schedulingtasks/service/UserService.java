@@ -178,6 +178,34 @@ public class UserService {
 
     @Transactional
     public void grantAuthority(final List<UserNote> userNotes) {
+        checkPermission(userNotes);
+
+        userNoteRepository.saveAll(userNotes);
+    }
+
+    @Transactional
+    public void removeAuthority(final List<UserNote> userNotes) {
+        checkPermission(userNotes);
+
+        final List<Long> userNoteIds = userNotes.stream()
+                .map(userNote -> userNote.getNote().getId())
+                .collect(Collectors.toList());
+        final List<UserNote> userNotesForDeletion =
+                userNoteRepository.retrieveAllByUserAndByNoteIdsAndByAccessLevelIsOwner(
+                        Long.valueOf(SecurityUtil.getPrincipal()),
+                        userNoteIds
+                );
+        userNoteRepository.deleteInBatch(userNotesForDeletion);
+    }
+
+    /**
+     * Check if all wanted userNotes are accessible for current user
+     * Check by comparing id of wanted userNotes with accessible userNotes
+     * in case of insufficient permission throw exception
+     * @param userNotes
+     * @throws RuntimeException - if don't have permission for some entities
+     */
+    private void checkPermission(final List<UserNote> userNotes) {
         final String principal = SecurityUtil.getPrincipal();
         final List<Long> noteIds = userNotes.stream()
                 .map(UserNote::getNote)
@@ -192,12 +220,10 @@ public class UserService {
                     final boolean hasAccess = accessibleNotes.stream()
                             .map(accessibleNote -> accessibleNote.getNote().getId())
                             .anyMatch(accessibleId -> Objects.equals(wantedNoteId, accessibleId));
-                    if(!hasAccess) {
+                    if (!hasAccess) {
                         throw new RuntimeException();
                     }
                 });
-
-        userNoteRepository.saveAll(userNotes);
     }
 
 }
