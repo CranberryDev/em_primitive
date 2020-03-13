@@ -13,22 +13,29 @@ public interface UserNoteRepository extends JpaRepository<UserNote, Long> {
     @Query("select un from UserNote un " +
             "left join fetch un.note " +
             "left join fetch un.accessLevel " +
-            "where un.user.id = :userId " +
+            "where " +
+            "(un.user.id = :userId " +
             "and " +
             "(un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.OWNER " +
             "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.READ " +
-            "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.WRITE)")
+            "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.WRITE) " +
+            ") " +
+            "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.PUBLIC_READ")
     @Transactional(readOnly = true)
     List<UserNote> retrieveAllByUser(final Long userId, final Pageable page);
 
 
-    @Query("select un from UserNote un " +
+    @Query("select distinct un from UserNote un " +
             "left join fetch un.note " +
-            "where un.user.id = :userId and un.note.id in :noteIds " +
+            "where " +
+            "(un.user.id = :userId and un.note.id in :noteIds " +
             "and " +
             "(un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.OWNER " +
             "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.READ " +
-            "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.WRITE)")
+            "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.WRITE" +
+            ")" +
+            ") " +
+            "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.PUBLIC_WRITE")
     @Transactional(readOnly = true)
     List<UserNote> retrieveAllByUserAndByNoteIds(final Long userId, final List<Long> noteIds);
 

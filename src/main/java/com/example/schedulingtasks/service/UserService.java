@@ -22,6 +22,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -160,7 +161,7 @@ public class UserService {
                 Long.valueOf(principal),
                 noteIds
         );
-        final List<Note> notesForUpdate = userNotes.stream()
+        final Set<Note> notesForUpdate = userNotes.stream()
                 .map(userNote -> {
                     final Note from = notes.stream()
                             .filter(newNote -> {
@@ -172,13 +173,14 @@ public class UserService {
                     userNote.getNote().copyFrom(from);
                     return userNote.getNote();
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         return noteRepository.saveAll(notesForUpdate);
     }
 
     @Transactional
     public void grantAuthority(final List<UserNote> userNotes) {
         checkPermission(userNotes);
+        checkPublicPermissionSubmitting(userNotes);
 
         userNoteRepository.saveAll(userNotes);
     }
@@ -202,6 +204,7 @@ public class UserService {
      * Check if all wanted userNotes are accessible for current user
      * Check by comparing id of wanted userNotes with accessible userNotes
      * in case of insufficient permission throw exception
+     *
      * @param userNotes
      * @throws RuntimeException - if don't have permission for some entities
      */
@@ -224,6 +227,21 @@ public class UserService {
                         throw new RuntimeException();
                     }
                 });
+    }
+
+    /**
+     * Public access can ba assigned only on owner(if multiple owners then on current user(if owner))
+     *
+     * @param userNotes
+     */
+    private void checkPublicPermissionSubmitting(final List<UserNote> userNotes) {
+        final String principal = SecurityUtil.getPrincipal();
+        final boolean canAssignPublicAccessOnNote = userNotes.stream()
+                .filter(userNote -> AccessLevelEnum.PUBLIC_READ == userNote.getAccessLevel().getValue())
+                .allMatch(userNote -> Objects.equals(Long.valueOf(principal), userNote.getUser().getId()));
+        if (!canAssignPublicAccessOnNote) {
+            throw new RuntimeException();
+        }
     }
 
 }

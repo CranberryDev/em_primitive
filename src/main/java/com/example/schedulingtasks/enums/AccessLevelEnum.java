@@ -8,7 +8,9 @@ import lombok.Getter;
 public enum AccessLevelEnum {
     OWNER("OWNER"),
     READ("READ"),
-    WRITE("WRITE");
+    WRITE("WRITE"),
+    PUBLIC_READ("PUBLIC_READ"),
+    PUBLIC_WRITE("PUBLIC_WRITE");
 
     private final String value;
 }
