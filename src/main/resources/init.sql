@@ -24,6 +24,11 @@ create table if not exists test."access_level"
 (
   value varchar(128) primary key
 );
+insert into test."access_level" values ('READ');
+insert into test."access_level" values ('WRITE');
+insert into test."access_level" values ('OWNER');
+insert into test."access_level" values ('PUBLIC_READ');
+insert into test."access_level" values ('PUBLIC_WRITE');
 
 create table if not exists test."user_note"
 (
