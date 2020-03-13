@@ -1,8 +1,14 @@
 package com.example.schedulingtasks.service;
 
 import com.example.schedulingtasks.domain.dto.PageRq;
+import com.example.schedulingtasks.domain.entity.Note;
 import com.example.schedulingtasks.domain.entity.User;
+import com.example.schedulingtasks.domain.entity.UserNote;
+import com.example.schedulingtasks.domain.repository.UserNoteRepository;
+import com.example.schedulingtasks.domain.repository.UserRepository;
+import com.example.schedulingtasks.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -12,12 +18,15 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final EntityManagerFactory emf;
+    private final UserRepository userRepository;
+    private final UserNoteRepository userNoteRepository;
 
     /**
      * @param filter
@@ -100,6 +109,14 @@ public class UserService {
         User user = entityManager.find(User.class, id);
         entityManager.close();
         return user;
+    }
+
+
+    public List<Note> getNotesByUser(final PageRequest page) {
+        final String principal = SecurityUtil.getPrincipal();
+        final List<UserNote> userNotes = userNoteRepository.retrieveAllByUser(Long.valueOf(principal), page);
+
+        return userNotes.stream().map(UserNote::getNote).collect(Collectors.toList());
     }
 
 }

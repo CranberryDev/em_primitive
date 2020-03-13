@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "user", schema = "test")
@@ -29,4 +30,16 @@ public class User {
     private Boolean isApplied;
 
     private Date date;
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "user_note", schema = "test",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "note_id")
+//    )
+//    private List<Note> notes;
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<UserNote> userNotes;
 }

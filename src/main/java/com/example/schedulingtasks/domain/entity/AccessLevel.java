@@ -1,12 +1,12 @@
 package com.example.schedulingtasks.domain.entity;
 
+import com.example.schedulingtasks.domain.attributeconverter.AccessLevelAttributeConverter;
+import com.example.schedulingtasks.enums.AccessLevelEnum;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "access_level", schema = "test")
@@ -16,6 +16,8 @@ import javax.persistence.Table;
 public class AccessLevel {
 
     @Id
-    private String value;
+    @Convert(converter = AccessLevelAttributeConverter.class)
+    @Enumerated(EnumType.STRING)
+    private AccessLevelEnum value;
 
 }

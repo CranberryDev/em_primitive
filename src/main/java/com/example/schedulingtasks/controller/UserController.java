@@ -1,12 +1,17 @@
 package com.example.schedulingtasks.controller;
 
+import com.example.schedulingtasks.constant.RequestConstant;
+import com.example.schedulingtasks.converter.NoteConverter;
 import com.example.schedulingtasks.converter.UserConverter;
+import com.example.schedulingtasks.domain.dto.NoteDto;
 import com.example.schedulingtasks.domain.dto.UserDto;
 import com.example.schedulingtasks.domain.dto.UserRq;
+import com.example.schedulingtasks.domain.entity.Note;
 import com.example.schedulingtasks.domain.entity.User;
 import com.example.schedulingtasks.service.UserService;
 import com.example.schedulingtasks.util.RqUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,9 +45,29 @@ public class UserController {
         userService.delete(id);
     }
 
-//    @GetMapping(path = "{userId}")
-//    public List<Object> allAccessibleNotes(@PathVariable(name = "userId") String userId) {
-//        return new ArrayList<>();
-//    }
+
+    @GetMapping(path = "notes")
+    public List<NoteDto> allAccessibleNotes(
+            @RequestParam(name = "page", defaultValue = RequestConstant.PAGE_STRING_DEFAULT) final Integer page,
+            @RequestParam(name = "limit", defaultValue = RequestConstant.LIMIT_STRING_DEFAULT) final Integer limit
+    ) {
+        final List<Note> notes = userService.getNotesByUser(PageRequest.of(page, limit));
+        return NoteConverter.toDtoList(notes);
+    }
+
+    @PostMapping(path = "notes/update")
+    public List<Object> updateNotes() {
+        return new ArrayList<>();
+    }
+
+    @PutMapping(path = "notes/create")
+    public List<Object> createNotes(@RequestBody final Object obj) {
+        return null;
+    }
+
+    @DeleteMapping(path = "notes")
+    public void deleteNotes() {
+
+    }
 
 }
