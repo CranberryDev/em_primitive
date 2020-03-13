@@ -43,4 +43,10 @@ public class RqUtil {
         }
     }
 
+    public static void checkOnUpdate(final List<NoteDto> notes) {
+        if(notes.stream().anyMatch(note -> Objects.isNull(note.getId()))) {
+            throw new RuntimeException();
+        }
+    }
+
 }

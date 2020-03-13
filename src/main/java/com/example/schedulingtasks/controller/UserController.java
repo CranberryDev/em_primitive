@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -55,9 +54,11 @@ public class UserController {
         return NoteConverter.toDtoList(notes);
     }
 
-    @PostMapping(path = "notes/update")
-    public List<Object> updateNotes() {
-        return new ArrayList<>();
+    @PostMapping(path = "notes")
+    public List<NoteDto> updateNotes(@RequestBody final List<NoteDto> notes) {
+        RqUtil.checkOnUpdate(notes);
+        final List<Note> result = userService.updateNotes(NoteConverter.toEntityList(notes));
+        return NoteConverter.toDtoList(result);
     }
 
     @PutMapping(path = "notes")

@@ -124,6 +124,11 @@ public class UserService {
         return userNotes.stream().map(UserNote::getNote).collect(Collectors.toList());
     }
 
+    /**
+     *
+     * @param notes - all objects in the list should not contain id value
+     * @return - created entity list
+     */
     @Transactional
     public List<Note> createNotes(final List<Note> notes) {
         final String principal = SecurityUtil.getPrincipal();
@@ -141,8 +146,37 @@ public class UserService {
 
                 })
                 .collect(Collectors.toList());
-        final List<UserNote> userNotes = userNoteRepository.saveAll(rawUserNotes);
+        userNoteRepository.saveAll(rawUserNotes);
         return saved;
+    }
+
+    /**
+     *
+     * @param notes - all objects is the list should contain id value as not null
+     * @return - updated entity list
+     */
+    @Transactional
+    public List<Note> updateNotes(final List<Note> notes) {
+        final String principal = SecurityUtil.getPrincipal();
+        final List<Long> noteIds = notes.stream().map(Note::getId).collect(Collectors.toList());
+        final List<UserNote> userNotes = userNoteRepository.retrieveAllByUserAndByNoteIds(
+                Long.valueOf(principal),
+                noteIds
+        );
+        final List<Note> notesForUpdate = userNotes.stream()
+                .map(userNote -> {
+                    final Note from = notes.stream()
+                            .filter(newNote -> {
+                                final Note oldNote = userNote.getNote();
+                                return Objects.equals(oldNote.getId(), newNote.getId());
+                            })
+                            .findFirst()
+                            .orElseThrow(RuntimeException::new);
+                    userNote.getNote().copyFrom(from);
+                    return userNote.getNote();
+                })
+                .collect(Collectors.toList());
+        return noteRepository.saveAll(notesForUpdate);
     }
 
 }

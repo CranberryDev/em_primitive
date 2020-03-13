@@ -21,4 +21,10 @@ public class Note {
 //    @JoinTable
 //    private AccessLevel accessLevel;
 
+    public void copyFrom(final Note from) {
+        this
+                .setText(from.getText())
+                .setId(from.getId());
+    }
+
 }
