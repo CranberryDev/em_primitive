@@ -177,7 +177,6 @@ public class UserService {
         return noteRepository.saveAll(notesForUpdate);
     }
 
-    @Transactional
     public void grantAuthority(final List<UserNote> userNotes) {
         checkPermission(userNotes);
         checkPublicPermissionSubmitting(userNotes);
