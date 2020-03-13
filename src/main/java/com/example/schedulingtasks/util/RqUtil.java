@@ -2,6 +2,7 @@ package com.example.schedulingtasks.util;
 
 import com.example.schedulingtasks.domain.dto.NoteDto;
 import com.example.schedulingtasks.domain.dto.PageRq;
+import com.example.schedulingtasks.domain.dto.UserNoteRq;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 
@@ -47,6 +48,22 @@ public class RqUtil {
         if(notes.stream().anyMatch(note -> Objects.isNull(note.getId()))) {
             throw new RuntimeException();
         }
+    }
+
+    public static void checkOnGrantAuthority(final List<UserNoteRq> userNotes) {
+        if(userNotes.stream().anyMatch(RqUtil::isBadParamForGrantAuthority)) {
+            throw new RuntimeException();
+        }
+    }
+
+    private static boolean isBadParamForGrantAuthority(final UserNoteRq userNote) {
+        if(Objects.isNull(userNote)) {
+            return true;
+        }
+        if(Objects.isNull(userNote.getNote()) || Objects.isNull(userNote.getUser())) {
+            return true;
+        }
+        return Objects.isNull(userNote.getAccessLevel()) || Objects.isNull(userNote.getAccessLevel().getValue());
     }
 
 }

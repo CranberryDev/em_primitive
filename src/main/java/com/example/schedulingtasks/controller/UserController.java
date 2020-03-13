@@ -1,13 +1,14 @@
 package com.example.schedulingtasks.controller;
 
 import com.example.schedulingtasks.constant.RequestConstant;
+import com.example.schedulingtasks.converter.NoteAndAccessLevelConverter;
 import com.example.schedulingtasks.converter.NoteConverter;
 import com.example.schedulingtasks.converter.UserConverter;
-import com.example.schedulingtasks.domain.dto.NoteDto;
-import com.example.schedulingtasks.domain.dto.UserDto;
-import com.example.schedulingtasks.domain.dto.UserRq;
+import com.example.schedulingtasks.converter.UserNoteConverter;
+import com.example.schedulingtasks.domain.dto.*;
 import com.example.schedulingtasks.domain.entity.Note;
 import com.example.schedulingtasks.domain.entity.User;
+import com.example.schedulingtasks.domain.entity.UserNote;
 import com.example.schedulingtasks.service.UserService;
 import com.example.schedulingtasks.util.RqUtil;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +47,12 @@ public class UserController {
 
 
     @GetMapping(path = "notes")
-    public List<NoteDto> allAccessibleNotes(
+    public List<NoteAndAccessLevel> allAccessibleNotes(
             @RequestParam(name = "page", defaultValue = RequestConstant.PAGE_STRING_DEFAULT) final Integer page,
             @RequestParam(name = "limit", defaultValue = RequestConstant.LIMIT_STRING_DEFAULT) final Integer limit
     ) {
-        final List<Note> notes = userService.getNotesByUser(PageRequest.of(page, limit));
-        return NoteConverter.toDtoList(notes);
+        final List<UserNote> notes = userService.getNotesByUser(PageRequest.of(page, limit));
+        return NoteAndAccessLevelConverter.toDtoList(notes);
     }
 
     @PostMapping(path = "notes")
@@ -68,9 +69,15 @@ public class UserController {
         return NoteConverter.toDtoList(createdNotes);
     }
 
-    @DeleteMapping(path = "notes")
-    public void deleteNotes() {
-
+    @PutMapping(path = "notes/authority")
+    public void grantAuthority(@RequestBody final List<UserNoteRq> notes) {
+        RqUtil.checkOnGrantAuthority(notes);
+        userService.grantAuthority(UserNoteConverter.toEntityList(notes));
     }
+
+//    @DeleteMapping(path = "notes")
+//    public void deleteNotes() {
+//
+//    }
 
 }

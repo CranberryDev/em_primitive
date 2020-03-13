@@ -117,15 +117,13 @@ public class UserService {
     }
 
 
-    public List<Note> getNotesByUser(final PageRequest page) {
+    public List<UserNote> getNotesByUser(final PageRequest page) {
         final String principal = SecurityUtil.getPrincipal();
-        final List<UserNote> userNotes = userNoteRepository.retrieveAllByUser(Long.valueOf(principal), page);
 
-        return userNotes.stream().map(UserNote::getNote).collect(Collectors.toList());
+        return userNoteRepository.retrieveAllByUser(Long.valueOf(principal), page);
     }
 
     /**
-     *
      * @param notes - all objects in the list should not contain id value
      * @return - created entity list
      */
@@ -151,7 +149,6 @@ public class UserService {
     }
 
     /**
-     *
      * @param notes - all objects is the list should contain id value as not null
      * @return - updated entity list
      */
@@ -177,6 +174,30 @@ public class UserService {
                 })
                 .collect(Collectors.toList());
         return noteRepository.saveAll(notesForUpdate);
+    }
+
+    @Transactional
+    public void grantAuthority(final List<UserNote> userNotes) {
+        final String principal = SecurityUtil.getPrincipal();
+        final List<Long> noteIds = userNotes.stream()
+                .map(UserNote::getNote)
+                .map(Note::getId)
+                .collect(Collectors.toList());
+
+        final List<UserNote> accessibleNotes =
+                userNoteRepository.retrieveAllByUserAndByNoteIdsAndByAccessLevelIsOwner(Long.valueOf(principal), noteIds);
+        userNotes
+                .forEach(userNote -> {
+                    final Long wantedNoteId = userNote.getNote().getId();
+                    final boolean hasAccess = accessibleNotes.stream()
+                            .map(accessibleNote -> accessibleNote.getNote().getId())
+                            .anyMatch(accessibleId -> Objects.equals(wantedNoteId, accessibleId));
+                    if(!hasAccess) {
+                        throw new RuntimeException();
+                    }
+                });
+
+        userNoteRepository.saveAll(userNotes);
     }
 
 }

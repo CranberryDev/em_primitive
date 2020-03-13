@@ -12,6 +12,7 @@ public interface UserNoteRepository extends JpaRepository<UserNote, Long> {
 
     @Query("select un from UserNote un " +
             "left join fetch un.note " +
+            "left join fetch un.accessLevel " +
             "where un.user.id = :userId " +
             "and " +
             "(un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.OWNER " +
@@ -30,6 +31,13 @@ public interface UserNoteRepository extends JpaRepository<UserNote, Long> {
             "or un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.WRITE)")
     @Transactional(readOnly = true)
     List<UserNote> retrieveAllByUserAndByNoteIds(final Long userId, final List<Long> noteIds);
+
+    @Query("select un from UserNote un " +
+            "left join fetch un.note " +
+            "where un.user.id = :userId and un.note.id in :noteIds " +
+            "and un.accessLevel.value = com.example.schedulingtasks.enums.AccessLevelEnum.OWNER")
+    @Transactional
+    List<UserNote> retrieveAllByUserAndByNoteIdsAndByAccessLevelIsOwner(final Long userId, final List<Long> noteIds);
 
 
 }

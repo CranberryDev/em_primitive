@@ -35,6 +35,7 @@ create table if not exists test."user_note"
 
   constraint user_note_user_fk foreign key (user_id) REFERENCES test."user" (id),
   constraint user_note_note_fk foreign key (note_id) references test."note" (id),
-  constraint user_note_access_level_fk foreign key (access_level) references test."access_level" (value)
+  constraint user_note_access_level_fk foreign key (access_level) references test."access_level" (value),
+  constraint user_note_comb_unique UNIQUE (user_id, note_id, access_level)
 );
 
