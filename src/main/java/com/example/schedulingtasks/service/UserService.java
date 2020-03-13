@@ -1,15 +1,19 @@
 package com.example.schedulingtasks.service;
 
 import com.example.schedulingtasks.domain.dto.PageRq;
+import com.example.schedulingtasks.domain.entity.AccessLevel;
 import com.example.schedulingtasks.domain.entity.Note;
 import com.example.schedulingtasks.domain.entity.User;
 import com.example.schedulingtasks.domain.entity.UserNote;
+import com.example.schedulingtasks.domain.repository.NoteRepository;
 import com.example.schedulingtasks.domain.repository.UserNoteRepository;
 import com.example.schedulingtasks.domain.repository.UserRepository;
+import com.example.schedulingtasks.enums.AccessLevelEnum;
 import com.example.schedulingtasks.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -27,6 +31,7 @@ public class UserService {
     private final EntityManagerFactory emf;
     private final UserRepository userRepository;
     private final UserNoteRepository userNoteRepository;
+    private final NoteRepository noteRepository;
 
     /**
      * @param filter
@@ -117,6 +122,27 @@ public class UserService {
         final List<UserNote> userNotes = userNoteRepository.retrieveAllByUser(Long.valueOf(principal), page);
 
         return userNotes.stream().map(UserNote::getNote).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<Note> createNotes(final List<Note> notes) {
+        final String principal = SecurityUtil.getPrincipal();
+        final List<Note> saved = noteRepository.saveAll(notes);
+        final List<UserNote> rawUserNotes = saved.stream()
+                .map(savedNote -> {
+                    return new UserNote()
+                            .setAccessLevel(
+                                    new AccessLevel().setValue(AccessLevelEnum.OWNER)
+                            )
+                            .setNote(savedNote)
+                            .setUser(
+                                    new User().setId(Long.valueOf(principal))
+                            );
+
+                })
+                .collect(Collectors.toList());
+        final List<UserNote> userNotes = userNoteRepository.saveAll(rawUserNotes);
+        return saved;
     }
 
 }

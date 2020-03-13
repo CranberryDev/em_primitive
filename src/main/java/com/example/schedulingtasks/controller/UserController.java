@@ -60,9 +60,11 @@ public class UserController {
         return new ArrayList<>();
     }
 
-    @PutMapping(path = "notes/create")
-    public List<Object> createNotes(@RequestBody final Object obj) {
-        return null;
+    @PutMapping(path = "notes")
+    public List<NoteDto> createNotes(@RequestBody final List<NoteDto> notes) {
+        RqUtil.checkOnCreate(notes);
+        final List<Note> createdNotes = userService.createNotes(NoteConverter.toEntityList(notes));
+        return NoteConverter.toDtoList(createdNotes);
     }
 
     @DeleteMapping(path = "notes")

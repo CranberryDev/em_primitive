@@ -27,8 +27,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .addFilterBefore(securityFilter, BasicAuthenticationFilter.class);
+        http
+                .csrf()
+                .disable();
 
-//        super.configure(http);
     }
 
 //    @Bean

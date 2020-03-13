@@ -21,4 +21,13 @@ public final class NoteConverter {
         return notes.stream().map(NoteConverter::toDto).collect(Collectors.toList());
     }
 
+    public static Note toEntity(final NoteDto note) {
+        return new Note()
+                .setId(note.getId())
+                .setText(note.getText());
+    }
+
+    public static List<Note> toEntityList(final List<NoteDto> notes) {
+        return notes.stream().map(NoteConverter::toEntity).collect(Collectors.toList());
+    }
 }

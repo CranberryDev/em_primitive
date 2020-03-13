@@ -1,9 +1,11 @@
 package com.example.schedulingtasks.util;
 
+import com.example.schedulingtasks.domain.dto.NoteDto;
 import com.example.schedulingtasks.domain.dto.PageRq;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -33,6 +35,12 @@ public class RqUtil {
         final Integer page = offset / limit;
 
         return PageRequest.of(page, limit);
+    }
+
+    public static void checkOnCreate(final List<NoteDto> notes) {
+        if(notes.stream().anyMatch(note -> Objects.nonNull(note.getId()))) {
+            throw new RuntimeException();
+        }
     }
 
 }
