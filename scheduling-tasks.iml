@@ -18,6 +18,7 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="OpenJPA" />
         <datasource-mapping>
+          <factory-entry name="Entities" />
           <factory-entry name="entityManagerFactory" value="5b624fe6-25a9-4586-a967-81f067f00476" />
         </datasource-mapping>
         <naming-strategy-map />
